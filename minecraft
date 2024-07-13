@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cobblemon
+    app.kubernetes.io/instance: cobblemon
+  name: cobblemon
+  namespace: cobblemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cobblemon
+  template:
+    metadata:
+      labels:
+        app: cobblemon
+    spec:
+      nodeSelector:
+        worker: "true"
+      containers:
+        - env:
+            - name: EULA
+              value: 'TRUE'
+            - name: MOD_PLATFORM
+              value: 'AUTO_CURSEFORGE'
+            - name: CF_API_KEY
+              value: '$$2a$$10$$glYS2Cf8Igq09KL2RmIta.D.2kUm5UBBKm3RlMqcmkFPj6jP/3EH6'
+            - name:  CF_SLUG
+              value: 'cobblemon-fabric'
+            #- name:  CF_FILENAME_MATCHER
+              #value: '9.1.11'
+            #- name: CF_SERVER_MOD
+              #value: '/download/cobblemon.zip'
+            - name: ALLOW_FLIGHT
+              value: 'TRUE'
+            - name: 'MEMORY'
+              value: '12G'
+          image: itzg/minecraft-server
+          name: cobblemon-server
+          ports:
+            - containerPort: 25566
+          resources:
+            limits:
+              memory: 12Gi
+            requests:
+              memory: 8Gi
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /data
+              name: cobblemon
+      restartPolicy: Always
+      volumes:
+        - name: cobblemon
+          persistentVolumeClaim:
+            claimName: cobblemon
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cobblemon
+  name: cobblemon
+  namespace: cobblemon
+spec:
+  ports:
+  - name: cobblemon-tcp
+    port: 25566
+    protocol: TCP
+    targetPort: 25566
+  selector:
+    app: cobblemon
+  loadBalancerIP: 10.1.40.13
+  type: LoadBalancer
