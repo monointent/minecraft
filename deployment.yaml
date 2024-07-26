@@ -3,19 +3,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: allthemods9
-    app.kubernetes.io/instance: allthemods9
-  name: allthemods9
-  namespace: allthemods9
+    app: seaopolis
+    app.kubernetes.io/instance: seaopolis
+  name: seaopolis
+  namespace: seaopolis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: allthemods9
+      app: seaopolis
   template:
     metadata:
       labels:
-        app: allthemods9
+        app: seaopolis
     spec:
       nodeSelector:
         worker: "true"
@@ -28,17 +28,17 @@ spec:
             - name: CF_API_KEY
               value: '$$2a$$10$$glYS2Cf8Igq09KL2RmIta.D.2kUm5UBBKm3RlMqcmkFPj6jP/3EH6'
             - name:  CF_SLUG
-              value: 'all-the-mods-9'
+              value: 'seaopolis-submerged'
             #- name:  CF_FILENAME_MATCHER
               #value: '9.1.11'
             #- name: CF_SERVER_MOD
-              #value: '/download/allthemods9.zip'
+              #value: '/download/seaopolis.zip'
             - name: ALLOW_FLIGHT
               value: 'TRUE'
             - name: 'MEMORY'
               value: '32G'
           image: itzg/minecraft-server
-          name: allthemods9-server
+          name: seaopolis-server
           ports:
             - containerPort: 25565
           resources:
@@ -50,27 +50,27 @@ spec:
           tty: true
           volumeMounts:
             - mountPath: /data
-              name: allthemods9
+              name: seaopolis
       restartPolicy: Always
       volumes:
-        - name: allthemods9
+        - name: seaopolis
           persistentVolumeClaim:
-            claimName: allthemods9
+            claimName: seaopolis
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: allthemods9
-  name: allthemods9
-  namespace: allthemods9
+    app: seaopolis
+  name: seaopolis
+  namespace: seaopolis
 spec:
   ports:
-  - name: allthemods9-tcp
+  - name: seaopolis-tcp
     port: 25565
     protocol: TCP
     targetPort: 25565
   selector:
-    app: allthemods9
-  loadBalancerIP: 10.1.40.13
+    app: seaopolis
+  loadBalancerIP: 10.1.40.15
   type: LoadBalancer
