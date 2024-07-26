@@ -3,19 +3,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: cobblemon
-    app.kubernetes.io/instance: cobblemon
-  name: cobblemon
-  namespace: cobblemon
+    app: allthemods9
+    app.kubernetes.io/instance: allthemods9
+  name: allthemods9
+  namespace: allthemods9
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cobblemon
+      app: allthemods9
   template:
     metadata:
       labels:
-        app: cobblemon
+        app: allthemods9
     spec:
       nodeSelector:
         worker: "true"
@@ -28,91 +28,49 @@ spec:
             - name: CF_API_KEY
               value: '$$2a$$10$$glYS2Cf8Igq09KL2RmIta.D.2kUm5UBBKm3RlMqcmkFPj6jP/3EH6'
             - name:  CF_SLUG
-              value: 'cobblemon-fabric'
+              value: 'all-the-mods-9'
             #- name:  CF_FILENAME_MATCHER
               #value: '9.1.11'
             #- name: CF_SERVER_MOD
-              #value: '/download/cobblemon.zip'
+              #value: '/download/allthemods9.zip'
             - name: ALLOW_FLIGHT
               value: 'TRUE'
             - name: 'MEMORY'
-              value: '12G'
+              value: '32G'
           image: itzg/minecraft-server
-          name: cobblemon-server
+          name: allthemods9-server
           ports:
-            - containerPort: 25566
+            - containerPort: 25565
           resources:
             limits:
-              memory: 12Gi
+              memory: 32Gi
             requests:
-              memory: 8Gi
+              memory: 32Gi
           stdin: true
           tty: true
           volumeMounts:
             - mountPath: /data
-              name: cobblemon
+              name: allthemods9
       restartPolicy: Always
       volumes:
-        - name: cobblemon
+        - name: allthemods9
           persistentVolumeClaim:
-            claimName: cobblemon
+            claimName: allthemods9
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: prominence-2
-  name: prominence-2
-  namespace: prominence-2 
+    app: allthemods9
+  name: allthemods9
+  namespace: allthemods9
 spec:
   ports:
-  - name: web-tcp
+  - name: allthemods9-tcp
     port: 25565
     protocol: TCP
     targetPort: 25565
-  - name: web-udp
-    port: 25565
-    protocol: UDP
-    targetPort: 25565
   selector:
-    app: prominence-2
-  type: ClusterIP
-  
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: prominence-2
-  namespace: prominence-2
-  annotations: 
-    kubernetes.io/ingress.class: traefik-external
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`prominence2.monocompute.com`) # change to your domain
-      kind: Rule
-      services:
-        - name: prominence-2
-          port: 25565
-      middlewares:
-        - name: prominence-2-default-headers
-  tls:
-    secretName: monocompute-tls # change to your cert name
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: prominence-2-default-headers
-  namespace: prominence-2
-spec:
-  headers:
-    browserXssFilter: true
-    contentTypeNosniff: true
-    forceSTSHeader: true
-    stsIncludeSubdomains: true
-    stsPreload: true
-    stsSeconds: 15552000
-    customFrameOptionsValue: SAMEORIGIN
-    customRequestHeaders:
-      X-Forwarded-Proto: https
+    app: allthemods9
+  loadBalancerIP: 10.1.40.13
+  type: LoadBalancer
